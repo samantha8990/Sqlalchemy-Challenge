@@ -27,7 +27,13 @@ def home():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
+        f"/api/v1.0/start_date<br/>"
+        f"/api/v1.0/start_date/end_date<br/>"
     )
+
+@app.route("/api/v1.0/precipitation")
+def precipitation():
+
 
 
 if __name__ == "__main__":
