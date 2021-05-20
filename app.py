@@ -57,9 +57,26 @@ def tobs():
     tobs=list(np.ravel(results))
     return jsonify(tobs)
 
-#@app.route("/api/v1.0/temp/<start>")
-#@app.route("/api/v1.0/temp/<start>/<end>") 
-#def   
+@app.route("/api/v1.0/temp/<start>")
+def start():
+    results=session.query(func.min(Measurement.tobs).\
+    func.avg(Measurement.tobs).\
+    func.max(Measurement.tobs).\
+    filter(Measurement.date >=start). first()
+    stats=list(np.ravel(results))
+return jsonify(stats)
+
+
+@app.route("/api/v1.0/temp/<start>/<end>") 
+def range():
+    results=session.query(func.min(Measurement.tobs).\
+    func.avg(Measurement.tobs).\
+    func.max(Measurement.tobs).\
+    filter(Measurement.date >=start).\
+    filter(Measurement.date <= end).first()
+    range_stats=list(np.ravel(results))
+return jsonify(range_stats)
+
     
 # 4. Define main behavior
 if __name__ == "__main__":
