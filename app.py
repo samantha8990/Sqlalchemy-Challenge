@@ -1,4 +1,5 @@
 #Dependencies
+from types import prepare_class
 import sqlalchemy
 import datetime as dt
 from sqlalchemy.ext.automap import automap_base
@@ -38,8 +39,19 @@ def home():
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     results=session.query(Measurement.date, Measurement.prcp).filter(Measurement.date >= '2016-08-23').order_by(Measurement.date. desc()).all()
-    prec=list(np.ravel(results))
+    
+  #  prec_dict={}
+  #  for date, precipitation in results:
+  #      prec_dict[date]=precipitation
+
+    prec=[]
+    for date, precipitation in results: 
+        prec_dict={'date': date, 
+                   'precipitation': precipitation}
+        prec.append(prec_dict)
     return jsonify(prec)
+    
+#    return jsonify(prec_dict)
 
 
 @app.route("/api/v1.0/stations")
@@ -58,24 +70,24 @@ def tobs():
     return jsonify(tobs)
 
 @app.route("/api/v1.0/temp/<start>")
-def start():
-    results=session.query(func.min(Measurement.tobs).\
-    func.avg(Measurement.tobs).\
-    func.max(Measurement.tobs).\
-    filter(Measurement.date >=start). first()
-    stats=list(np.ravel(results))
-return jsonify(stats)
+def start(start):
+    results=session.query(func.min(Measurement.tobs), \
+    func.avg(Measurement.tobs), \
+    func.max(Measurement.tobs)).\
+    filter(Measurement.date >=start).first()
+    stat=list(np.ravel(results))
+    return jsonify(stat)
 
 
 @app.route("/api/v1.0/temp/<start>/<end>") 
-def range():
-    results=session.query(func.min(Measurement.tobs).\
-    func.avg(Measurement.tobs).\
-    func.max(Measurement.tobs).\
+def range(start, end):
+    results=session.query(func.min(Measurement.tobs),\
+    func.avg(Measurement.tobs),\
+    func.max(Measurement.tobs)).\
     filter(Measurement.date >=start).\
     filter(Measurement.date <= end).first()
     range_stats=list(np.ravel(results))
-return jsonify(range_stats)
+    return jsonify(range_stats)
 
     
 # 4. Define main behavior
