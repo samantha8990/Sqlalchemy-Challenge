@@ -4,6 +4,8 @@ import datetime as dt
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
+import pandas as pd
+import numpy as np
 
 from flask import Flask, jsonify
 
@@ -12,8 +14,8 @@ from flask import Flask, jsonify
 engine = create_engine('sqlite:///hawaii.sqlite')
 Base = automap_base()
 Base.prepare(engine, reflect=True)
-measurement = Base.classes.measurement
-station = Base.classes.station
+Measurement = Base.classes.measurement
+Station = Base.classes.station
 
 session=Session(engine)
 
@@ -35,26 +37,29 @@ def home():
 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    prc=session.query(Measurement.date, Measurement.prcp).filter(Measurement.date >= '2016-08-23').order_by(Measurement.date. desc()).all()
-    return jsonify(prc)
+    results=session.query(Measurement.date, Measurement.prcp).filter(Measurement.date >= '2016-08-23').order_by(Measurement.date. desc()).all()
+    prec=list(np.ravel(results))
+    return jsonify(prec)
 
 
 @app.route("/api/v1.0/stations")
 def stations():
-    station_list=session.query(Station.station).all()
-    return jsonify(station_list)
+    results=session.query(Station.station).all()
+    stations=list(np.ravel(results))
+    return jsonify(stations)
 
 @app.route("/api/v1.0/tobs")
 def tobs():
-    last_year=session.query(Measurement.station, Measurement.date, Measurement.tobs).\
+    results=session.query(Measurement.station, Measurement.date, Measurement.tobs).\
     filter(Measurement.station=='USC00519281').\
     filter(Measurement.date >= '2016-08-23').\
     order_by(Measurement.date).all()
+    tobs=list(np.ravel(results))
     return jsonify(tobs)
 
-@app.route("/api/v1.0/temp/<start>")
-@app.route("/api/v1.0/temp/<start>/<end>") 
-def   
+#@app.route("/api/v1.0/temp/<start>")
+#@app.route("/api/v1.0/temp/<start>/<end>") 
+#def   
     
 # 4. Define main behavior
 if __name__ == "__main__":
